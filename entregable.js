@@ -1,98 +1,94 @@
-class productManager {
+const fs = require('fs');
 
+
+class productManager{
     #id = 0;
+    #path = undefined;
+          constructor(){                 
+                        if (!fs.existsSync('./products.json')) {
 
-    constructor(){
+                            fs.writeFileSync('./products.json',JSON.stringify([]))
+                            
+                        }
 
-            this.products = [];
+             this.#path = fs.promises.readFile('./products.json', 'utf-8');   
 
-    }
-
-    getProductos(){
-
-        return this.products
-                
-    }
-
-   addProduct(title = undefined, description = undefined, price = undefined, thumbnail = undefined, code = undefined, stock = undefined){
-                let filtro = this.products.filter((element)=>element.code === code )
-            if (filtro.length > 0) {
-                
-                 console.log("YA EXISTE UN PRODUCTO CON EL CODE QUE INTENTA INGRESAR");
-                 return
-            }
-
-        const product = {
-
-                title,
-                description,
-                price,
-                thumbnail,
-                code,
-                stock
         }
 
-        // le agrego el ID al producto
-		product.id = this.#getID();
+        #getID() {
+            // Incremento en 1 el valor de id
+            this.#id++; 
+            return this.#id;
+        }
 
 
-        //Verificacion que no haya campos UNDEFINED
+       async addProduct(title = undefined, description = undefined, price = undefined, thumbnail = undefined, code = undefined, stock = undefined){
 
-        let newProducts = []
+            try {
+                const product = await {
 
-            let values = Object.values(product)
-            newProducts.push(values)
-        
-                //Junto todos los valores en el array
-            let allValues = newProducts.flat()
-                    //Verifico si hay algún valor que haya quedado UNDEFINED
-             if (allValues.includes(undefined) || allValues.includes('')) {
+                    title: title,
+                    description: description,
+                    price: price,
+                    thumbnail: thumbnail,
+                    code: code,
+                    stock: stock
+            }
+
                 
-                return this.#verificar()
-             }else{
 
-                this.products.push(product)
+                product.id = await this.#getID();
+
+                const actualprods = await this.getProducts();
                 
-             }
-             
-            
-    }
-    #getID() {
-		// Incremento en 1 el valor de id
-		this.#id++; 
-		return this.#id;
-	}
-
-    #verificar() {
-
-         console.log("HAY VALORES SIN DEFINIR, DEBE COMPLETAR TODAS LAS VARIABLES PARA INSTANCIAR LOS OBJETOS");
-
-    }
-
-    getProductById(id){
-            let array = this.products.filter((product)=> {
-                return product.id === id
-            })
-             if (array.length == 0) {
-                
-                console.log("ERROR: Not Found");
-                return
-             }else{
                  
-                return array
-             }
-            
-            
-    }
+                actualprods.push(product)
+
+                await fs.promises.writeFile('./products.json', JSON.stringify(actualprods))
+
+            } catch (error) {
+                console.log("no se cargó ningún producto, algo salio mal: ", error);
+            }
+
+        
+
+        }
 
 
+
+        async getProducts(){
+
+                try {
+
+                    const content = await this.#path;
+
+                    return JSON.parse(content);
+                    
+                } catch (error) {
+                    console.log('hubo un error para obtener los usuarios');
+                }
+
+        }
+
+        getProductById(id){
+            
+
+
+        }
+
+        updateProduct(id, campo){
+
+            
+
+        }
+
+        deleteProduct(){
+
+
+        }
 
 }
 
-let pd = new productManager()
+let pd = new productManager();
 
- pd.addProduct( "Monitor","Monitor led 32 pulgadas 144ghz", 147600, "url", 11324, 10);
- pd.addProduct( "Kit teclado y mouse","paquete con teclado y mouse gamer", 22345, "url", 1132445, 10);
- pd.addProduct( "Fuente","Fuente certifica 80 Plus 750W", 87345, "url",12455658, 10);
-console.log(pd.getProductos());
- console.log("Tomo por ID: ",pd.getProductById(2));
+pd.addProduct("Monitor","Monitor led 32 pulgadas 144ghz", 147600, "url", 11324, 10)
