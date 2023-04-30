@@ -1,4 +1,6 @@
 const fs = require('fs');
+const { test } = require('node:test');
+const { title } = require('process');
 
 
 class productManager{
@@ -24,6 +26,7 @@ class productManager{
 
        async addProduct(title = undefined, description = undefined, price = undefined, thumbnail = undefined, code = undefined, stock = undefined){
 
+                
             try {
                 const product = await {
 
@@ -36,15 +39,34 @@ class productManager{
             }
 
                 
-
                 product.id = await this.#getID();
 
                 const actualprods = await this.getProducts();
-                
-                 
-                actualprods.push(product)
 
-                await fs.promises.writeFile('./products.json', JSON.stringify(actualprods))
+                await console.log(actualprods);
+
+                const filtro = await actualprods.filter(prod => prod.id == product.id )
+
+                if (filtro.length) {
+
+                    console.log("Este producto de ID: ",product.id, "ya existe");
+
+                    return
+                    
+                }else{
+
+
+                     actualprods.push(product)
+                
+
+                 await fs.promises.writeFile('./products.json', JSON.stringify(actualprods))
+                }
+
+                
+            
+
+
+                
 
             } catch (error) {
                 console.log("no se cargó ningún producto, algo salio mal: ", error);
@@ -70,19 +92,137 @@ class productManager{
 
         }
 
-        getProductById(id){
-            
+        async getProductById(id){
 
+            try {
+                
+                const actualprods = await this.getProducts();
+
+                if (actualprods.length == 0) {
+
+                    console.log("No se puede filtrar ningun producto por su ID, el archivo aun está vacio");
+                    return
+                }else{
+
+                    const filtro = await actualprods.filter((prod)=>{
+                        return prod.id === id;
+                    })
+    
+                    if (filtro.length >0) {
+                        return console.log("Resultado de GetProductsBy ID: Producto filtrado por id:",id,filtro);
+                        
+                    }else{
+    
+                        return console.log("Resultado de GetProductsBy ID: No existe ningun producto con este ID");
+                    }
+
+
+                }
+
+                
+                
+
+            } catch (error) {
+                
+                 console.log("Algo falló: ",error);
+            }
+            
+            
 
         }
 
-        updateProduct(id, campo){
+        async updateProduct(id, campo, newValue){
+                try {
+                        //LLamo a lista de productos actuales:
+                        const actualprods = await this.getProducts();
 
+                        if (actualprods.length == 0) {
+                            console.log("No se puede actualizar nada, el archivo aun está vacio");
+                            return
+                        }else{
+
+                            console.log("Usted desea actualizar producto de ID: ",id," campo: ",campo);
+
+                            //Traigo el objeto del id del parametro
+                        const newFilter = await actualprods.filter((prod)=>{
+
+                            return prod.id === id;
+                        })
+
+                       if (newFilter.length == 0) {
+
+                        console.log("No existe en la lista un objeto con el ID: ", id," no se puede actualizar nada.");
+
+                        return
+
+                       }else{
+
+                        //Actualizo
+                        const listUpdated = await newFilter.find((prod)=>{
+
+                            prod[campo] = newValue;
+                            return prod;
+                             
+                         })
+                                //Filtro una nueva lista sin el objeto anterior
+                            const actualprodsupdated = await actualprods.filter(prod => prod.id !== id);
+
+                            await actualprodsupdated.push(listUpdated);
+
+                            await fs.promises.writeFile('./products.json', JSON.stringify(actualprods))
+
+                          console.log("Lista actualizada: ", listUpdated);
+                        
+                       }
+
+                        
+                        }
+
+                        
+
+                         
+                } catch (error) {
+                    
+                    console.log(error);
+                }
+                
             
 
         }
 
-        deleteProduct(){
+        async deleteProduct(id){
+
+            try {
+
+                        const actualprods = await this.getProducts();
+
+                        const testid = await actualprods.filter(prod => prod.id == id);
+
+                        if (testid == 0) {
+                            console.log("Este producto con el ID: ",id, "no existe en la lista. No se puede eliminar nada");
+                            return
+                        }else{
+
+                            const listUpdated = await actualprods.filter(prod => prod.id !== id);
+
+
+                             await fs.promises.writeFile('./products.json', JSON.stringify(listUpdated))
+
+
+                        console.log("Lista con elemento de ID: ",id," eliminado", listUpdated);
+                        }
+
+                       
+
+
+                
+            } catch (error) {
+
+                console.log(error);
+                
+            }
+
+                        
 
 
         }
@@ -91,4 +231,16 @@ class productManager{
 
 let pd = new productManager();
 
-pd.addProduct("Monitor","Monitor led 32 pulgadas 144ghz", 147600, "url", 11324, 10)
+
+ pd.addProduct("Monitor2","Monitor led 32 pulgadas 144ghz", 147600, "url", 11324, 10)
+ pd.addProduct("Monitor3","Monitor led 32 pulgadas 144ghz", 147600, "url", 11324, 10)
+ pd.addProduct("Monitor4","Monitor led 32 pulgadas 144ghz", 147600, "url", 11324, 10)
+
+        pd.getProductById(2);
+    
+       pd.updateProduct(6,"title","consola");
+
+      pd.deleteProduct(3);
+
+
+ 
