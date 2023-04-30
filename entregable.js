@@ -240,7 +240,7 @@ let pd = new productManager();
     
        pd.updateProduct(6,"title","consola");
 
-      pd.deleteProduct(3);
+      pd.deleteProduct(1);
 
 
  
