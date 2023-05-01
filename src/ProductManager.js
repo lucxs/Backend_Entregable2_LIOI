@@ -1,9 +1,9 @@
-const fs = require('fs');
-const { test } = require('node:test');
-const { title } = require('process');
+import fs from 'fs';
+// const { test } = require('node:test');
+// const { title } = require('process');
 
 
-class productManager{
+export default class productManager{
     #id = 0;
     #path = undefined;
           constructor(){                 
@@ -229,18 +229,18 @@ class productManager{
 
 }
 
-let pd = new productManager();
+// let pd = new productManager();
 
 
- pd.addProduct("Monitor2","Monitor led 32 pulgadas 144ghz", 147600, "url", 11324, 10)
- pd.addProduct("Monitor3","Monitor led 32 pulgadas 144ghz", 147600, "url", 11324, 10)
- pd.addProduct("Monitor4","Monitor led 32 pulgadas 144ghz", 147600, "url", 11324, 10)
+//  pd.addProduct("Monitor2","Monitor led 32 pulgadas 144ghz", 147600, "url", 11324, 10)
+//  pd.addProduct("Monitor3","Monitor led 32 pulgadas 144ghz", 147600, "url", 11324, 10)
+//  pd.addProduct("Monitor4","Monitor led 32 pulgadas 144ghz", 147600, "url", 11324, 10)
 
-        pd.getProductById(2);
+//         pd.getProductById(2);
     
-       pd.updateProduct(6,"title","consola");
+//        pd.updateProduct(6,"title","consola");
 
-      pd.deleteProduct(1);
+//       pd.deleteProduct(1);
 
 
  
